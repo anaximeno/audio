@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import pyaudio
 import wave
@@ -10,32 +10,23 @@ RATE = 44100
 RECORD_SECONDS = 5
 WAVE_OUTPUT_FILENAME = "output.wav"
 
+
+# Using the `with` method to open file, which is more secure
 p = pyaudio.PyAudio()
-
-stream = p.open(format=FORMAT,
-                channels=CHANNELS,
-                rate=RATE,
-                input=True,
-                frames_per_buffer=CHUNK)
-
-print("* recording")
-
-frames = []
-
-for i in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
-    data = stream.read(CHUNK)
-    frames.append(data)
-
-print("* done recording")
-
-stream.stop_stream()
-stream.close()
+with p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK) as stream:
+  print("* recording")
+  frames = [
+    stream.read(CHUNK) for i in range(0, int(RATE / CHUNK * RECORD_SECONDS))
+  ]
+  print("* done recording")
+  stream.stop_stream()
 p.terminate()
 
-wf = wave.open(WAVE_OUTPUT_FILENAME, 'wb')
-wf.setnchannels(CHANNELS)
-wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(RATE)
-wf.writeframes(b''.join(frames))
-wf.close()
+
+# Using the `with` method to open file, which is more secure
+with wave.open(WAVE_OUTPUT_FILENAME, 'wb') as wf:
+  wf.setnchannels(CHANNELS)
+  wf.setsampwidth(p.get_sample_size(FORMAT))
+  wf.setframerate(RATE)
+  wf.writeframes(b''.join(frames))
 
