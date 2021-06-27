@@ -13,13 +13,13 @@ WAVE_OUTPUT_FILENAME = "output.wav"
 
 # Using the `with` method to open file, which is more secure
 p = pyaudio.PyAudio()
-with p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK) as stream:
-  print("* recording")
-  frames = [
-    stream.read(CHUNK) for i in range(0, int(RATE / CHUNK * RECORD_SECONDS))
-  ]
-  print("* done recording")
-  stream.stop_stream()
+stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
+print("* recording")
+frames = [
+  stream.read(CHUNK) for i in range(0, int(RATE / CHUNK * RECORD_SECONDS))
+]
+print("* done recording")
+stream.stop_stream()
 p.terminate()
 
 
