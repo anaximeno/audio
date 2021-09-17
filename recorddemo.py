@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
+from time import sleep
 import argparse
 import pyaudio
 import wave
 import os
-from time import sleep
+
 
 CHUNK: int = 1024
 FORMAT = pyaudio.paInt16
@@ -11,6 +12,7 @@ CHANNELS: int = 2
 RATE: int = 44100
 RECORD_SECONDS: int = 5
 WAVE_OUTPUT_FILENAME: str = "output.wav"
+
 
 try:
     # 'tqdm' is used to show progress bar when recording,
@@ -21,7 +23,6 @@ except ImportError:
     tqdm_available = False
 
 required_modules = []
-
 try:
     import pyaudio
 except ImportError:
@@ -36,7 +37,6 @@ if any(required_modules):
     print('You must install the following modules before using this program: ', end='')
     print(' '.join(required_modules))
     exit(1)
-
 
 
 class Recorder(object):
@@ -84,7 +84,7 @@ class Recorder(object):
             wf.setsampwidth(self.pyaudio.get_sample_size(self.audio_format))
             wf.setframerate(self.rate)
             wf.writeframes(b''.join(frames))
-
+        print(f'Saved {str(name)!r}!')
 
 
 if __name__ == '__main__':
@@ -106,5 +106,5 @@ if __name__ == '__main__':
     chunks = args.chunks if args.chunks else CHUNK
     savename = args.name if args.name else WAVE_OUTPUT_FILENAME
 
-    rec = Recorder(channels, rate, chunks, clear=False)
+    rec = Recorder(channels, rate, chunks, clear=args.no_warns)
     output = rec.record(record_seconds, args.save, savename)
