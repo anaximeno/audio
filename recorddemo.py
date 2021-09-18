@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-from time import sleep
 import argparse
 import pyaudio
 import wave
@@ -7,7 +6,7 @@ import os
 
 
 CHUNK: int = 1024
-FORMAT = pyaudio.paInt16
+FORMAT: int = pyaudio.paInt16
 CHANNELS: int = 2
 RATE: int = 44100
 RECORD_SECONDS: int = 5
@@ -42,6 +41,8 @@ if any(required_modules):
 class Recorder(object):
 
     def __init__(self, channels: int, rate: int, chunk: int, audio_format: int = FORMAT, *args, **kwargs) -> None:
+        """The Recorder class.
+        """
         super(Recorder, self).__init__()
 
         self.audio_format = audio_format
@@ -50,10 +51,8 @@ class Recorder(object):
         self.chunk = chunk
 
         self.pyaudio = pyaudio.PyAudio()
-        self.stream = self.pyaudio.open(format=self.audio_format,
-            channels=self.channels,
-            rate=self.rate, input=True,
-            frames_per_buffer=self.chunk)
+        self.stream = self.pyaudio.open(format=self.audio_format, channels=self.channels,
+            rate=self.rate, input=True, frames_per_buffer=self.chunk)
 
         if 'clear' in kwargs and kwargs['clear'] is True:
             os.system('clear')
