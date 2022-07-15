@@ -49,14 +49,23 @@ class Recorder(object):
         self.channels = channels
         self.rate = rate
         self.chunk = chunk
+        self.pyaudio = None
+        self.stream = None
 
-        self.pyaudio = pyaudio.PyAudio()
-        self.stream = self.pyaudio.open(format=self.audio_format, channels=self.channels,
-            rate=self.rate, input=True, frames_per_buffer=self.chunk)
+        self.init_streams()
 
         if 'clear' in kwargs and kwargs['clear'] is True:
             os.system('clear')
     
+    def init_streams(self):
+        self.pyaudio = pyaudio.PyAudio()
+        self.stream = self.pyaudio.open(format=self.audio_format, channels=self.channels,
+            rate=self.rate, input=True, frames_per_buffer=self.chunk)
+
+    def stop_streams(self):
+        self.stream.stop_stream()
+        self.pyaudio.terminate()
+
     def record(self, secs: int = RECORD_SECONDS, save: bool = True, name: str = WAVE_OUTPUT_FILENAME):
         """Records the audio and save it inside the file named `name` if `save` is set to True.
         """
@@ -66,11 +75,11 @@ class Recorder(object):
         if tqdm_available:
             loop = tqdm(loop, desc='Recording', ncols=60, bar_format='{desc} ({remaining_s:.2f})s: |-{bar}-|')
         else:
-            print('Init Recording(..)')
-        
+            print('Recording...')
+    
         frames = [self.stream.read(self.chunk) for _ in loop]
-        self.stream.stop_stream()
-        self.pyaudio.terminate()
+
+        self.stop_streams()
 
         if save is True:
             self.save(frames, name)
